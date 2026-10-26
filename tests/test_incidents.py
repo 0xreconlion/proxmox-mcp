@@ -2,8 +2,8 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from nodeops_mcp.monitoring.health import HealthResult, HealthState
-from nodeops_mcp.monitoring.incidents import (
+from proxmox_mcp.monitoring.health import HealthResult, HealthState
+from proxmox_mcp.monitoring.incidents import (
     DeliveryAction,
     IncidentKey,
     IncidentLifecycle,

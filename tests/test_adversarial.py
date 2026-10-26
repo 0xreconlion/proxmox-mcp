@@ -7,12 +7,12 @@ from typing import Any, cast
 import pytest
 from mcp.server.mcpserver.exceptions import ToolError
 
-from nodeops_mcp import fixtures
-from nodeops_mcp.adapters.proxmox import AdapterResult, SimulatedProxmoxAdapter
-from nodeops_mcp.catalog import FIXED_TOOL_NAMES
-from nodeops_mcp.security.authorization import AuthorizationPolicy
-from nodeops_mcp.server import build_server
-from nodeops_mcp.service import NodeOpsService
+from proxmox_mcp import fixtures
+from proxmox_mcp.adapters.proxmox import AdapterResult, SimulatedProxmoxAdapter
+from proxmox_mcp.catalog import FIXED_TOOL_NAMES
+from proxmox_mcp.security.authorization import AuthorizationPolicy
+from proxmox_mcp.server import build_server
+from proxmox_mcp.service import ProxmoxService
 
 
 class HostileOutputAdapter(SimulatedProxmoxAdapter):
@@ -33,8 +33,8 @@ class HostileOutputAdapter(SimulatedProxmoxAdapter):
         )
 
 
-def hostile_output_service(hostile_text: str) -> NodeOpsService:
-    return NodeOpsService(
+def hostile_output_service(hostile_text: str) -> ProxmoxService:
+    return ProxmoxService(
         adapter=HostileOutputAdapter(hostile_text),
         policy=AuthorizationPolicy(
             allowed_nodes=frozenset({fixtures.NODE}),

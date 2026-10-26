@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from nodeops_mcp.security.authentication import (
+from proxmox_mcp.security.authentication import (
     StaticBearerConfig,
     StaticBearerTokenVerifier,
     build_auth_settings,
@@ -14,12 +14,12 @@ def make_config(tmp_path: Path) -> StaticBearerConfig:
     token_file.write_text("owner-client-fixture-token", encoding="utf-8")
     return StaticBearerConfig(
         token_file=token_file,
-        issuer_url="https://nodeops.test:8443",
-        resource_server_url="https://nodeops.test:8443/mcp",
+        issuer_url="https://proxmox-mcp.test:8443",
+        resource_server_url="https://proxmox-mcp.test:8443/mcp",
         client_id="approved-owner-client",
-        required_scope="nodeops:read",
-        allowed_hosts=("nodeops.test:8443",),
-        allowed_origins=("https://nodeops.test:8443",),
+        required_scope="proxmox-mcp:read",
+        allowed_hosts=("proxmox-mcp.test:8443",),
+        allowed_origins=("https://proxmox-mcp.test:8443",),
     )
 
 
@@ -31,8 +31,8 @@ async def test_static_token_verifier_returns_bounded_identity(tmp_path: Path) ->
     )
     assert access is not None
     assert access.client_id == "approved-owner-client"
-    assert access.scopes == ["nodeops:read"]
-    assert access.resource == "https://nodeops.test:8443/mcp"
+    assert access.scopes == ["proxmox-mcp:read"]
+    assert access.resource == "https://proxmox-mcp.test:8443/mcp"
     assert access.token == "accepted-but-never-logged"
 
 
@@ -45,7 +45,7 @@ async def test_static_token_verifier_rejects_invalid_token(tmp_path: Path) -> No
 def test_auth_settings_require_resource_binding(tmp_path: Path) -> None:
     settings = build_auth_settings(make_config(tmp_path))
     assert settings.validate_token_resource is True
-    assert settings.required_scopes == ["nodeops:read"]
+    assert settings.required_scopes == ["proxmox-mcp:read"]
 
 
 def test_wildcard_host_is_forbidden(tmp_path: Path) -> None:
@@ -56,7 +56,7 @@ def test_wildcard_host_is_forbidden(tmp_path: Path) -> None:
         resource_server_url=config.resource_server_url,
         client_id=config.client_id,
         required_scope=config.required_scope,
-        allowed_hosts=("nodeops.test:*",),
+        allowed_hosts=("proxmox-mcp.test:*",),
         allowed_origins=config.allowed_origins,
     )
     with pytest.raises(ValueError, match="wildcards"):

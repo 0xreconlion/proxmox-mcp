@@ -2,7 +2,7 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from nodeops_mcp.monitoring.health import (
+from proxmox_mcp.monitoring.health import (
     HealthState,
     NumericObservation,
     ThresholdDirection,

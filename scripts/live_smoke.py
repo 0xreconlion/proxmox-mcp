@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import json
 
-from nodeops_mcp.config import load_live_config
-from nodeops_mcp.schemas import BoundedQuery, GuestTarget, GuestType, envelope_to_dict
-from nodeops_mcp.service import build_live_service
+from proxmox_mcp.config import load_live_config
+from proxmox_mcp.schemas import BoundedQuery, GuestTarget, GuestType, envelope_to_dict
+from proxmox_mcp.service import build_live_service
 
 
 def main() -> None:

@@ -6,9 +6,9 @@ from typing import Any
 import pytest
 from mcp.server.mcpserver.exceptions import ToolError
 
-from nodeops_mcp import fixtures
-from nodeops_mcp.catalog import FIXED_TOOL_NAMES
-from nodeops_mcp.server import build_server
+from proxmox_mcp import fixtures
+from proxmox_mcp.catalog import FIXED_TOOL_NAMES
+from proxmox_mcp.server import build_server
 
 
 def structured(result: Any) -> dict[str, object]:

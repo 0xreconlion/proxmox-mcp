@@ -1,27 +1,26 @@
 # Deployment
 
-Three systemd units ship here. Pick one; they are not meant to be combined.
+Two systemd units ship here. Pick one; they are not meant to be combined.
 
 | Unit | Purpose | Binds |
 | --- | --- | --- |
-| `systemd/nodeops-mcp-lab.service` | Credential-free trial run. No Proxmox token, no network egress. | `127.0.0.1:8766/mcp` |
-| `systemd/nodeops-mcp.service.template` | Production transport. Requires credentials and TLS inputs. | your choice |
-| `systemd/nodeops-console.service.template` | Optional read-only operations console. | `127.0.0.1:8421` |
+| `systemd/proxmox-mcp-lab.service` | Credential-free trial run. No Proxmox token, no network egress. | `127.0.0.1:8766/mcp` |
+| `systemd/proxmox-mcp.service.template` | Production transport. Requires credentials and TLS inputs. | your choice |
 
-Both `.template` files contain `[EDIT-REQUIRED]` markers. Copy, fill them in,
+The `.template` file contains `[EDIT-REQUIRED]` markers. Copy, fill them in,
 then install:
 
 ```bash
-grep -n 'EDIT-REQUIRED' systemd/nodeops-mcp.service.template
+grep -n 'EDIT-REQUIRED' systemd/proxmox-mcp.service.template
 ```
 
 ## Rules that are not tuning knobs
 
 - **Never add a reverse-proxy route, public listener, or Proxmox credential to
   the lab unit.** Its whole value is that it cannot reach anything.
-- **Never bind the console to a LAN address or put it behind a public CDN.** It
-  trusts identity headers only from loopback; exposing it directly makes those
-  headers forgeable. Front it with an authenticated tunnel or don't run it.
+- **Do not bind the production unit to a public interface without authenticated
+  TLS in front of it.** The service validates Host and Origin against exact
+  configured values, which is a backstop, not a substitute for a real edge.
 - The HTTP limits (64 KiB request bodies, eight concurrent requests, 120
   accepted requests per rolling 60-second window) are enforced in the
   application *in addition to* systemd and firewall controls. Changing them

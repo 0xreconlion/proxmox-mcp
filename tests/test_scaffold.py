@@ -1,11 +1,11 @@
 import unittest
 
-from nodeops_mcp.catalog import FIXED_TOOL_CATALOG, FIXED_TOOL_NAMES
-from nodeops_mcp.config import NodeOpsConfig
-from nodeops_mcp.schemas import BoundedQuery, GuestTarget, GuestType, ResultStatus
-from nodeops_mcp.security.authorization import AuthorizationPolicy
-from nodeops_mcp.server import build_server
-from nodeops_mcp.telemetry.audit import FORBIDDEN_AUDIT_KEYS, AuditEvent
+from proxmox_mcp.catalog import FIXED_TOOL_CATALOG, FIXED_TOOL_NAMES
+from proxmox_mcp.config import ProxmoxConfig
+from proxmox_mcp.schemas import BoundedQuery, GuestTarget, GuestType, ResultStatus
+from proxmox_mcp.security.authorization import AuthorizationPolicy
+from proxmox_mcp.server import build_server
+from proxmox_mcp.telemetry.audit import FORBIDDEN_AUDIT_KEYS, AuditEvent
 
 
 class CatalogTests(unittest.TestCase):
@@ -44,7 +44,7 @@ class InputBoundaryTests(unittest.TestCase):
     def test_config_rejects_non_https_backend(self) -> None:
         from pathlib import Path
 
-        config = NodeOpsConfig(
+        config = ProxmoxConfig(
             environment="test",
             deployment_version="0.0.0-scaffold",
             proxmox_base_url="http://proxmox.example.invalid",
@@ -64,7 +64,7 @@ class InputBoundaryTests(unittest.TestCase):
 
     def test_server_exposes_exact_catalog(self) -> None:
         server = build_server()
-        self.assertEqual(server.name, "NodeOps Lab")
+        self.assertEqual(server.name, "Proxmox MCP Lab")
 
 
 class AuthorizationTests(unittest.TestCase):

@@ -53,7 +53,7 @@ def main() -> None:
     parser.add_argument(
         "--node",
         required=True,
-        help="node name to probe; must be in your NODEOPS_PROXMOX_NODE_ALLOWLIST",
+        help="node name to probe; must be in your PROXMOX_MCP_NODE_ALLOWLIST",
     )
     parser.add_argument("--token-file", type=Path)
     parser.add_argument("--ca-file", type=Path)

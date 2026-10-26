@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 from starlette.types import Message, Receive, Scope, Send
 
-from nodeops_mcp.security.limits import BoundedHttpMiddleware
+from proxmox_mcp.security.limits import BoundedHttpMiddleware
 
 
 def http_scope() -> Scope:
@@ -23,7 +23,7 @@ def http_scope() -> Scope:
         "root_path": "",
         "headers": [],
         "client": ("127.0.0.1", 1234),
-        "server": ("nodeops.test", 8443),
+        "server": ("proxmox-mcp.test", 8443),
         "state": {},
     }
 

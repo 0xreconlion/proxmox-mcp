@@ -1,0 +1,50 @@
+[Unit]
+Description=Proxmox MCP deterministic protocol laboratory
+Documentation=file:///opt/proxmox-mcp/README.md
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=60s
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=proxmox-mcp
+Group=proxmox-mcp
+WorkingDirectory=/opt/proxmox-mcp
+Environment=PROXMOX_MCP_MODE=simulated
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/proxmox-mcp/.venv/bin/proxmox-mcp-server --transport streamable-http --host 127.0.0.1 --port 8766
+Restart=on-failure
+RestartSec=5s
+TimeoutStartSec=30s
+TimeoutStopSec=15s
+UMask=0077
+
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectHome=yes
+ProtectHostname=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/proxmox-mcp /var/log/proxmox-mcp
+CapabilityBoundingSet=
+AmbientCapabilities=
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+IPAddressDeny=any
+IPAddressAllow=localhost
+MemoryMax=512M
+CPUQuota=50%
+TasksMax=64
+LimitNOFILE=1024
+
+[Install]
+WantedBy=multi-user.target

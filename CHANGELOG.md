@@ -16,7 +16,7 @@ makes the server usable by anyone other than its original author.
   `get_guest_status`, `get_node_health`, `get_storage_status`,
   `get_recent_tasks`, and `get_backup_status`. The catalog is fixed and finite.
 - **Configuration-driven allowlists.** Nodes, storages, and guests are supplied
-  via `NODEOPS_PROXMOX_*_ALLOWLIST` and compiled into the advertised tool schema
+  via `PROXMOX_MCP_*_ALLOWLIST` and compiled into the advertised tool schema
   at startup, so a model is constrained by the schema it is shown as well as by
   the server-side authorization layer. Empty allowlists are rejected rather than
   interpreted as "allow everything".
@@ -54,7 +54,8 @@ makes the server usable by anyone other than its original author.
 - **Hardened systemd units** and a `.env.example` annotated with
   `[EDIT-REQUIRED]` / `[EDIT-OPTIONAL]` markers, greppable so you can confirm
   your configuration is complete.
-- 176 tests, a large share of which assert that unsafe operations are *refused*.
+- **MIT license.**
+- 125 tests, a large share of which assert that unsafe operations are *refused*.
 
 ### Deliberately absent
 
@@ -62,6 +63,18 @@ makes the server usable by anyone other than its original author.
   `src/`. This server cannot change your cluster, by construction.
 - **Any bundled model provider, endpoint, or credential.** The recommendation
   and evaluation scaffolds are disconnected; nothing calls out to a model.
-- **An active notification route.** The mailer configuration seam loads and
-  validates, but registers no dispatch call site, so no message can be sent
-  until one is deliberately reviewed and added.
+- **An operations console.** The original deployment had a web console, but it
+  was built around one specific single-operator setup — a single hardcoded
+  identity, a particular tunnel topology, and assumptions about the host it ran
+  on. Generalizing it would have meant inventing an auth model rather than
+  shipping one that had been tested, so it was cut instead. If you want a UI,
+  point an existing MCP client at this server.
+- **Notification delivery.** The original deployment mailed incident state
+  through a provider-specific worker that nobody else would have. Rather than
+  ship a seam wired to infrastructure you don't run, the delivery code was
+  removed and the **decision logic kept**: `monitoring/` still computes whether
+  a notification is due — `DeliveryAction.SEND_STATE_CHANGE`, `SEND_REMINDER`,
+  `SUPPRESSED_MAINTENANCE`, `NONE` — with dedupe keys, reminder cooldowns, and
+  monotonic delivery timestamps via `mark_delivery`. That is the hard part and
+  it is provider-independent. Wire it to whatever you actually use: read the
+  decision, send the message, call `mark_delivery`.

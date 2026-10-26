@@ -6,20 +6,20 @@ import httpx
 import pytest
 import respx
 
-from nodeops_mcp.adapters.proxmox import HttpxProxmoxAdapter, ProxmoxAdapterError
-from nodeops_mcp.config import NodeOpsConfig
-from nodeops_mcp.schemas import BoundedQuery, GuestTarget, GuestType, ResultStatus
+from proxmox_mcp.adapters.proxmox import HttpxProxmoxAdapter, ProxmoxAdapterError
+from proxmox_mcp.config import ProxmoxConfig
+from proxmox_mcp.schemas import BoundedQuery, GuestTarget, GuestType, ResultStatus
 
 ORIGIN = "https://pve.test:8006"
 CA_FILE = Path("/etc/ssl/certs/ca-certificates.crt")
 
 
-def make_config(tmp_path: Path, *, max_response_bytes: int = 65_536) -> NodeOpsConfig:
+def make_config(tmp_path: Path, *, max_response_bytes: int = 65_536) -> ProxmoxConfig:
     token_id = tmp_path / "id"
     token_secret = tmp_path / "secret"
-    token_id.write_text("nodeops@pve!test", encoding="utf-8")
+    token_id.write_text("proxmox-mcp@pve!test", encoding="utf-8")
     token_secret.write_text("fixture-secret-never-returned", encoding="utf-8")
-    return NodeOpsConfig(
+    return ProxmoxConfig(
         environment="test",
         deployment_version="test",
         proxmox_base_url=ORIGIN,
@@ -54,7 +54,7 @@ def test_list_guests_filters_scope_caps_and_normalizes(tmp_path: Path) -> None:
                         "maxmem": 1024,
                         "maxdisk": 2048,
                     },
-                    {"vmid": 101, "name": "nodeops", "type": "qemu", "node": "hv-a"},
+                    {"vmid": 101, "name": "mcp-host", "type": "qemu", "node": "hv-a"},
                 ]
             },
         )

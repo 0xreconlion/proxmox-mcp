@@ -6,16 +6,16 @@ from collections.abc import Mapping
 
 import pytest
 
-from nodeops_mcp import fixtures
-from nodeops_mcp.adapters.proxmox import (
+from proxmox_mcp import fixtures
+from proxmox_mcp.adapters.proxmox import (
     AdapterResult,
     ProxmoxAdapterError,
     SimulatedProxmoxAdapter,
 )
-from nodeops_mcp.schemas import GuestTarget, GuestType, ResultStatus, ToolError
-from nodeops_mcp.security.authorization import AuthorizationPolicy
-from nodeops_mcp.service import NodeOpsService
-from nodeops_mcp.telemetry.audit import FORBIDDEN_AUDIT_KEYS, JsonAuditLogger
+from proxmox_mcp.schemas import GuestTarget, GuestType, ResultStatus, ToolError
+from proxmox_mcp.security.authorization import AuthorizationPolicy
+from proxmox_mcp.service import ProxmoxService
+from proxmox_mcp.telemetry.audit import FORBIDDEN_AUDIT_KEYS, JsonAuditLogger
 
 
 class FailingAdapter(SimulatedProxmoxAdapter):
@@ -37,8 +37,8 @@ class PartialAdapter(SimulatedProxmoxAdapter):
         )
 
 
-def audited_service(stream: io.StringIO) -> NodeOpsService:
-    return NodeOpsService(
+def audited_service(stream: io.StringIO) -> ProxmoxService:
+    return ProxmoxService(
         adapter=SimulatedProxmoxAdapter(),
         policy=AuthorizationPolicy(
             allowed_nodes=frozenset({fixtures.NODE}),
@@ -97,7 +97,7 @@ def test_backend_failure_and_partial_result_are_audited(
     expected_status: int,
 ) -> None:
     stream = io.StringIO()
-    service = NodeOpsService(
+    service = ProxmoxService(
         adapter=adapter,
         policy=AuthorizationPolicy(
             allowed_nodes=frozenset({fixtures.NODE}),

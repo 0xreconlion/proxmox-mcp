@@ -5,13 +5,13 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from nodeops_mcp.monitoring.incidents import (
+from proxmox_mcp.monitoring.incidents import (
     IncidentKey,
     IncidentLifecycle,
     IncidentRecord,
     IncidentSeverity,
 )
-from nodeops_mcp.monitoring.journal import IncidentJournalEvent, IncidentReplay
+from proxmox_mcp.monitoring.journal import IncidentJournalEvent, IncidentReplay
 
 NOW = datetime(2026, 10, 25, 18, 0, tzinfo=UTC)
 KEY = IncidentKey("storage_capacity_v1", "storage", "critical")

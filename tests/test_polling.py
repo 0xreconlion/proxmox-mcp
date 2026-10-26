@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from nodeops_mcp.monitoring.polling import PollCoordinator, PollLimits, PollStatus
+from proxmox_mcp.monitoring.polling import PollCoordinator, PollLimits, PollStatus
 
 
 class Clock:

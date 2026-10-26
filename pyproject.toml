@@ -3,10 +3,12 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "nodeops-mcp"
-version = "0.6.0rc2"
+name = "proxmox-mcp"
+version = "0.1.0"
 description = "Read-only Proxmox VE inspection over MCP — no mutating verbs in the tool surface"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = [
     "httpx>=0.28.1",
@@ -16,12 +18,13 @@ dependencies = [
 ]
 
 [project.scripts]
-nodeops-mcp = "nodeops_mcp.server:main"
-nodeops-console = "nodeops_mcp.console.app:main"
-proxmox-mcp = "nodeops_mcp.cli:main"
+# Setup and inspection helper: discover, check, simulate.
+proxmox-mcp = "proxmox_mcp.cli:main"
+# The MCP server itself.
+proxmox-mcp-server = "proxmox_mcp.server:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/nodeops_mcp"]
+packages = ["src/proxmox_mcp"]
 
 [tool.ruff]
 line-length = 100

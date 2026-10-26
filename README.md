@@ -8,13 +8,14 @@ Fork or clone it, run a crawl against your own cluster, review what it proposes,
 working MCP server scoped to exactly the nodes, storages, and guests you chose.
 
 ```
-proxmox-mcp simulate --dry-run   # 1. try it with zero credentials
-proxmox-mcp discover ...         # 2. crawl your Proxmox, get proposed allowlists
-proxmox-mcp check                # 3. validate what you configured
-nodeops-mcp --transport stdio    # 4. serve it
+proxmox-mcp simulate --dry-run        # 1. try it with zero credentials
+                                      # 2. create a read-only Proxmox token
+proxmox-mcp discover ...              # 3. crawl your Proxmox, get proposed allowlists
+proxmox-mcp check                     # 4. validate what you configured
+proxmox-mcp-server --transport stdio  # 5. serve it
 ```
 
-Steps 1–5 below are that list, in order.
+Sections 1–5 below are that list, in order.
 
 ## What it can and cannot do
 
@@ -105,9 +106,9 @@ It issues read-only `GET` requests and prints what it found plus a proposed conf
 #   qemu:110    running   app (node hv-a)
 #   lxc:201     stopped   old (node hv-b)
 
-NODEOPS_PROXMOX_NODE_ALLOWLIST=hv-a,hv-b
-NODEOPS_PROXMOX_STORAGE_ALLOWLIST=local,nas-backups,ssd-pool
-NODEOPS_PROXMOX_GUEST_ALLOWLIST=lxc:200,qemu:110
+PROXMOX_MCP_NODE_ALLOWLIST=hv-a,hv-b
+PROXMOX_MCP_STORAGE_ALLOWLIST=local,nas-backups,ssd-pool
+PROXMOX_MCP_GUEST_ALLOWLIST=lxc:200,qemu:110
 ```
 
 **Review and trim this.** Everything you leave in is something the model will be able to read.
@@ -137,10 +138,10 @@ server refuses to start rather than guessing.
 
 ```sh
 # stdio, for a local MCP client on the same machine
-uv run nodeops-mcp --transport stdio
+uv run proxmox-mcp-server --transport stdio
 
 # or bounded loopback HTTP
-uv run nodeops-mcp --transport streamable-http --host 127.0.0.1 --port 8000
+uv run proxmox-mcp-server --transport streamable-http --host 127.0.0.1 --port 8000
 ```
 
 `deployment/systemd/` has hardened unit templates if you want it supervised. They ship with
@@ -164,19 +165,20 @@ deny-by-default policy behind it is what actually stops anything.
 
 ## Parameters
 
-Precedence is config file, then `NODEOPS_*` environment variables, then CLI flags. See
+Precedence is config file, then `PROXMOX_MCP_*` environment variables, then CLI flags. See
 `.env.example` for the full list. The ones you will actually touch:
 
 | Setting | Meaning |
 |---|---|
-| `NODEOPS_PROXMOX_BASE_URL` | your Proxmox origin, HTTPS, no path |
-| `NODEOPS_PROXMOX_NODE_ALLOWLIST` | comma-separated node names |
-| `NODEOPS_PROXMOX_STORAGE_ALLOWLIST` | comma-separated storage names |
-| `NODEOPS_PROXMOX_GUEST_ALLOWLIST` | comma-separated `kind:id`, e.g. `qemu:110,lxc:200` |
-| `NODEOPS_PROXMOX_TOKEN_ID_FILE` | file holding `user@realm!tokenname` |
-| `NODEOPS_PROXMOX_TOKEN_SECRET_FILE` | file holding the secret, mode `600` |
-| `NODEOPS_PROXMOX_CA_FILE` | CA bundle for your Proxmox certificate |
-| `NODEOPS_HTTP_HOST` / `_PORT` / `_PATH` | HTTP transport binding |
+| `PROXMOX_MCP_BASE_URL` | your Proxmox origin, HTTPS, no path |
+| `PROXMOX_MCP_NODE_ALLOWLIST` | comma-separated node names |
+| `PROXMOX_MCP_STORAGE_ALLOWLIST` | comma-separated storage names |
+| `PROXMOX_MCP_GUEST_ALLOWLIST` | comma-separated `kind:id`, e.g. `qemu:110,lxc:200` |
+| `PROXMOX_MCP_TOKEN_ID_FILE` | file holding `user@realm!tokenname` |
+| `PROXMOX_MCP_TOKEN_SECRET_FILE` | file holding the secret, mode `600` |
+| `PROXMOX_MCP_CA_FILE` | CA bundle for your Proxmox certificate |
+| `PROXMOX_MCP_HTTP_HOST` / `_PORT` | HTTP transport binding; the path is fixed at `/mcp` |
+| `PROXMOX_MCP_MODE` | `simulated` or `live`. **Defaults to `simulated`** — set it to `live` or you get fixture data |
 
 Transport bounds (request size, concurrency, rate) are deliberately not runtime knobs. Raising
 them widens what a client can push at the server before authentication, so they live in code
@@ -198,7 +200,7 @@ that is revocable on its own. Do not widen the read token.
 
 ```sh
 uv sync
-uv run pytest        # 176 tests
+uv run pytest        # 125 tests
 uv run ruff check .
 uv run mypy src tests
 ```

@@ -6,7 +6,7 @@ import httpx
 import pytest
 import respx
 
-from nodeops_mcp.discovery import Discovered, DiscoveryError, discover
+from proxmox_mcp.discovery import Discovered, DiscoveryError, discover
 
 ORIGIN = "https://proxmox.example.invalid:8006"
 API = f"{ORIGIN}/api2/json"
@@ -78,9 +78,9 @@ def test_stopped_guests_included_on_request() -> None:
 def test_env_rendering_is_reviewable() -> None:
     _mock_cluster()
     rendered = _run().as_env()
-    assert "NODEOPS_PROXMOX_NODE_ALLOWLIST=hv-a,hv-b" in rendered
-    assert "NODEOPS_PROXMOX_STORAGE_ALLOWLIST=local,nas-backups,ssd-pool" in rendered
-    assert "NODEOPS_PROXMOX_GUEST_ALLOWLIST=lxc:200,qemu:110" in rendered
+    assert "PROXMOX_MCP_NODE_ALLOWLIST=hv-a,hv-b" in rendered
+    assert "PROXMOX_MCP_STORAGE_ALLOWLIST=local,nas-backups,ssd-pool" in rendered
+    assert "PROXMOX_MCP_GUEST_ALLOWLIST=lxc:200,qemu:110" in rendered
 
 
 @respx.mock

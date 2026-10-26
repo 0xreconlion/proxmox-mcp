@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Bounded local Ollama partner evaluation for NodeOps candidate models.
+"""Bounded local Ollama partner evaluation for Proxmox MCP candidate models.
 
-This script never connects to NodeOps or Proxmox and grants the model no tools.
+This script never connects to this server or to Proxmox, and grants the model no tools.
 It measures response validity, latency, timeout/no-response behavior, and whether
 the model follows a small, fixed JSON contract for tool selection and advice.
 """
@@ -182,7 +182,7 @@ def main() -> None:
                 "cases": model_results,
             }
         )
-    print(json.dumps({"evaluation": "nodeops-partner-smoke-v1", "results": results}, indent=2))
+    print(json.dumps({"evaluation": "mcp-partner-smoke-v1", "results": results}, indent=2))
 
 
 if __name__ == "__main__":

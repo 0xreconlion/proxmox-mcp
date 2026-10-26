@@ -5,16 +5,16 @@ from collections.abc import Mapping
 
 import pytest
 
-from nodeops_mcp import fixtures
-from nodeops_mcp.evaluation import (
+from proxmox_mcp import fixtures
+from proxmox_mcp.evaluation import (
     AgenticCase,
     AgenticEvaluationHarness,
     AgenticTrace,
     ToolEvidence,
     ToolInvocation,
 )
-from nodeops_mcp.evaluation.agentic import evaluate_agentic_case
-from nodeops_mcp.schemas import ResultStatus
+from proxmox_mcp.evaluation.agentic import evaluate_agentic_case
+from proxmox_mcp.schemas import ResultStatus
 
 
 def invocation(
@@ -61,7 +61,7 @@ def answer(
                 }
             ],
             "inference": inference,
-            "verification_steps": ["Use the approved read-only NodeOps tool again."],
+            "verification_steps": ["Use the approved read-only Proxmox MCP tool again."],
             "unavailable_actions": ["infrastructure_mutation"],
         }
     )
