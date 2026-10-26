@@ -1,0 +1,1 @@
+"""Safe telemetry boundary."""

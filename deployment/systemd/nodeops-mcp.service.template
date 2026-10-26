@@ -1,0 +1,58 @@
+[Unit]
+Description=NodeOps MCP authenticated private service
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=60s
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=nodeops
+Group=nodeops
+WorkingDirectory=/opt/nodeops-mcp
+EnvironmentFile=/etc/nodeops-mcp/runtime.env
+Environment=NODEOPS_MODE=live
+Environment=NODEOPS_AUTH_MODE=static-bearer
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/nodeops-mcp/.venv/bin/nodeops-mcp --transport streamable-http --host ${NODEOPS_HTTP_HOST} --port ${NODEOPS_HTTP_PORT} --tls-cert-file /etc/nodeops-mcp/tls/server.crt --tls-key-file /etc/nodeops-mcp/tls/server.key
+Restart=on-failure
+RestartSec=5s
+TimeoutStartSec=30s
+TimeoutStopSec=15s
+UMask=0077
+
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectHome=yes
+ProtectHostname=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/nodeops-mcp /var/log/nodeops-mcp
+CapabilityBoundingSet=
+AmbientCapabilities=
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+MemoryMax=512M
+CPUQuota=50%
+TasksMax=64
+LimitNOFILE=1024
+
+# [EDIT-REQUIRED] Lock this unit down to the addresses it actually needs. Add
+# IPAddressDeny=any plus an exact IPAddressAllow line for your Proxmox host and
+# for each approved MCP client. Leaving this out means the service may talk to
+# any address your host can reach.
+#
+#   IPAddressDeny=any
+#   IPAddressAllow=10.0.0.10        # your Proxmox host
+#   IPAddressAllow=10.0.0.20        # your approved MCP client
+
+[Install]
+WantedBy=multi-user.target
