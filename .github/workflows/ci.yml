@@ -1,0 +1,39 @@
+name: CI
+# The four commands AGENTS.md declares as the gate, in that order, so the
+# published result and the documented standard cannot drift apart. The suite is
+# required to be offline, credential-free, and free of wall-clock dependence,
+# which is why no service containers or secrets appear here.
+#
+# Actions are pinned to a commit SHA rather than a tag: a tag can be moved to
+# point at different code, which makes a pinned tag no stronger than a branch.
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate:
+    strategy:
+      # Report every leg. A cancelled sibling reads as a failure in summary
+      # views, which makes a single real break hard to find.
+      fail-fast: false
+      matrix:
+        # requires-python is >=3.11 and mypy is configured for 3.13.
+        # Run both ends of the supported range.
+        python: ['3.11', '3.13']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run mypy src tests
+      - run: uv run pytest
+      # CLI smoke check only — it proves the entry point resolves and the
+      # package imports cleanly. The read-only tool-surface guarantee is
+      # asserted by the test suite above, not by this step.
+      - run: uv run proxmox-mcp --help
